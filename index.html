@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#120d24">
+<title>Bahane Üretici 🎮</title>
+<meta name="description" content="Bugün de mi yoksun? Ya gel ya da bahaneni üret 😂">
+<meta property="og:title" content="Bugün de mi yoksun? 😂">
+<meta property="og:description" content="Müsaitsen gel. Değilsen Bahane Üretici'den bahaneni üret.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+<style>
+  :root {
+    --bg: #120d24;
+    --card: #1d1636;
+    --card2: #271e47;
+    --border: #3a2f63;
+    --text: #f3f0ff;
+    --muted: #a99fcf;
+    --green: #3ddc84;
+    --red: #ff5370;
+    --purple: #b388ff;
+    --orange: #ffab40;
+    --yellow: #ffd54f;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; color: var(--text); }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    min-height: 100dvh;
+    background: radial-gradient(circle at 20% 0%, #3b1f6e 0%, transparent 50%), radial-gradient(circle at 100% 100%, #1f3b6e 0%, transparent 45%), var(--bg);
+    background-attachment: fixed;
+    padding: max(16px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+    overflow-x: hidden;
+  }
+  .app { max-width: 460px; margin: 0 auto; }
+
+  .logo { text-align: center; margin: 8px 0 18px; }
+  .logo-emoji { font-size: 44px; display: inline-block; animation: bob 2.4s ease-in-out infinite; }
+  @keyframes bob { 50% { transform: translateY(-6px) rotate(-6deg); } }
+  .logo-title { font-size: 22px; font-weight: 900; letter-spacing: -.3px; margin-top: 4px; }
+  .logo-title span { background: linear-gradient(90deg, var(--purple), #ff80ab); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 22px; padding: 22px 18px; box-shadow: 0 20px 50px rgba(0,0,0,.45); }
+
+  h1 { font-size: 25px; margin: 0 0 6px; line-height: 1.2; }
+  h2 { font-size: 20px; margin: 0 0 4px; }
+  p.sub { color: var(--muted); margin: 0 0 18px; font-size: 15px; line-height: 1.45; }
+  .label { font-size: 14px; font-weight: 700; color: var(--muted); margin: 20px 0 10px; display: block; }
+
+  .screen { display: none; animation: pop .35s ease; }
+  .screen.active { display: block; }
+  @keyframes pop { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }
+
+  .btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 16px 18px; margin-top: 12px;
+    border: 0; border-radius: 14px; font-size: 16.5px; font-weight: 800; cursor: pointer;
+    color: #0e2a1a; background: var(--green); transition: transform .1s, filter .15s;
+    font-family: inherit; text-decoration: none;
+  }
+  .btn:active { transform: scale(.97); }
+  .btn.red { background: var(--red); color: #fff; }
+  .btn.ghost { background: transparent; color: var(--text); border: 1px solid var(--border); font-weight: 600; }
+  .btn.purple { background: linear-gradient(90deg, var(--purple), #ff80ab); color: #1a0f33; }
+  .btn.wa { background: #25d366; color: #062b14; }
+  .btn:disabled { filter: grayscale(1) brightness(.55); cursor: not-allowed; }
+
+  input[type=text], textarea {
+    width: 100%; padding: 15px 16px; border-radius: 14px; border: 2px solid var(--border);
+    background: var(--bg); color: var(--text); font: 17px inherit; font-family: inherit; outline: none;
+  }
+  input[type=text]:focus, textarea:focus { border-color: var(--purple); }
+  textarea { resize: vertical; min-height: 84px; font-size: 15.5px; }
+
+  /* yes / no questions */
+  .q { background: var(--card2); border-radius: 16px; padding: 16px; margin-top: 12px; }
+  .q-title { font-size: 17px; font-weight: 700; margin-bottom: 12px; }
+  .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .seg button {
+    padding: 14px; border-radius: 12px; border: 2px solid var(--border); background: var(--bg);
+    color: var(--muted); font: 700 16px inherit; font-family: inherit; cursor: pointer; transition: all .15s;
+  }
+  .seg button.on.yes { background: rgba(61,220,132,.15); border-color: var(--green); color: var(--green); }
+  .seg button.on.no { background: rgba(255,83,112,.15); border-color: var(--red); color: var(--red); }
+
+  /* chips */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    padding: 11px 15px; border-radius: 999px; border: 2px solid var(--border); background: var(--card2);
+    color: var(--text); font-size: 15px; cursor: pointer; transition: all .15s; font-family: inherit;
+  }
+  .chip.on { border-color: var(--green); background: rgba(61,220,132,.15); color: var(--green); font-weight: 700; }
+  .chips.red .chip.on { border-color: var(--red); background: rgba(255,83,112,.13); color: #ff9aac; }
+
+  /* alarm */
+  .alarm { background: linear-gradient(135deg, #4a0f1f, #2a0b16); border: 2px solid var(--red); border-radius: 18px; padding: 18px 16px; text-align: center; margin-bottom: 18px; }
+  .alarm-emoji { font-size: 40px; animation: siren .6s ease-in-out infinite alternate; display: inline-block; }
+  @keyframes siren { to { transform: scale(1.15) rotate(8deg); } }
+  .alarm-title { font-size: 21px; font-weight: 900; color: #ff8fa3; margin-top: 4px; letter-spacing: .5px; }
+  .alarm-sub { font-size: 15px; color: #ffc7d1; margin-top: 4px; }
+  .shake { animation: shake .5s; }
+  @keyframes shake { 0%,100%{transform:none} 20%{transform:translateX(-8px) rotate(-1deg)} 40%{transform:translateX(8px) rotate(1deg)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+
+  /* excuse machine */
+  .machine { background: var(--bg); border: 2px solid var(--purple); border-radius: 18px; padding: 20px 16px 16px; margin-top: 18px; position: relative; text-align: center; }
+  .machine-tag { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--purple); color: #1a0f33; font-weight: 800; font-size: 12px; padding: 4px 12px; border-radius: 999px; white-space: nowrap; }
+  .excuse { font-size: 18px; line-height: 1.45; font-weight: 700; min-height: 104px; display: flex; align-items: center; justify-content: center; }
+  .excuse.spinning { filter: blur(1.5px); opacity: .7; }
+  .meter { margin-top: 14px; text-align: left; }
+  .meter-top { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+  .bar { height: 10px; border-radius: 99px; background: var(--card2); overflow: hidden; }
+  .bar-fill { height: 100%; width: 0; border-radius: 99px; transition: width .7s cubic-bezier(.2,.9,.3,1.2), background .3s; }
+  .verdict { margin-top: 10px; font-size: 14.5px; color: var(--yellow); min-height: 20px; }
+  .counter { text-align: center; font-size: 12.5px; color: var(--muted); margin-top: 16px; }
+
+  /* final message */
+  .msg { background: #005c4b; color: #e9edef; border-radius: 12px 12px 4px 12px; padding: 12px 14px; font-size: 15px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; margin: 6px 0 4px auto; max-width: 95%; box-shadow: 0 1px 1px rgba(0,0,0,.3); }
+  .msg-wrap { background: #0b141a; border-radius: 14px; padding: 14px 10px; }
+  .msg-time { text-align: right; font-size: 11px; color: #8696a0; }
+
+  .toast { position: fixed; left: 50%; bottom: max(24px, env(safe-area-inset-bottom)); transform: translateX(-50%) translateY(140px); background: var(--text); color: var(--bg); padding: 12px 18px; border-radius: 14px; font-weight: 700; font-size: 14.5px; transition: transform .3s cubic-bezier(.2,.9,.3,1.3); z-index: 50; max-width: calc(100% - 32px); text-align: center; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  .confetti { position: fixed; top: -20px; font-size: 22px; pointer-events: none; z-index: 40; animation: fall linear forwards; }
+  @keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
+
+  .footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 18px; opacity: .7; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="logo">
+    <div class="logo-emoji">🎮</div>
+    <div class="logo-title"><span>Bahane Üretici</span></div>
+  </div>
+
+  <div class="card">
+
+    <!-- 1: name -->
+    <section class="screen active" id="s-name">
+      <h1>Önce bir tanışalım 🕵️</h1>
+      <p class="sub">Bu akşam oyun var: Rainbow Six Siege ya da Counter-Strike 2. Kimin geldiğini, kimin bahane uydurduğunu bilmemiz lazım.</p>
+      <input type="text" id="nameInput" maxlength="24" placeholder="Adın ne?" autocomplete="off" enterkeyhint="go">
+      <button class="btn" id="nameBtn">Devam et →</button>
+    </section>
+
+    <!-- 2: questions -->
+    <section class="screen" id="s-bool">
+      <h1 id="helloTitle">Selam!</h1>
+      <p class="sub">İki soru var, ikisine de dürüst cevap ver. Yalan söylersen anlarız 👀</p>
+
+      <div class="q">
+        <div class="q-title">🕐 Bu akşam müsait misin?</div>
+        <div class="seg" data-var="musait">
+          <button class="yes" data-v="1">Evet 👍</button>
+          <button class="no" data-v="0">Hayır 👎</button>
+        </div>
+      </div>
+      <div class="q">
+        <div class="q-title">🎮 Oynamak istiyor musun?</div>
+        <div class="seg" data-var="istek">
+          <button class="yes" data-v="1">Evet 🔥</button>
+          <button class="no" data-v="0">Hayır 😴</button>
+        </div>
+      </div>
+
+      <button class="btn" id="evalBtn" disabled>Sonucu gör 🎲</button>
+    </section>
+
+    <!-- 3a: varim -->
+    <section class="screen" id="s-yes">
+      <h1>Efsane geri döndü 🔥</h1>
+      <p class="sub">İşte bunu bekliyorduk. Birkaç detay seç, gruba haber verelim.</p>
+
+      <span class="label">Hangi oyun?</span>
+      <div class="chips" id="gameChips" data-multi="1">
+        <button class="chip" data-v="Rainbow Six Siege">🛡️ Rainbow Six Siege</button>
+        <button class="chip" data-v="Counter-Strike 2">💣 Counter-Strike 2</button>
+        <button class="chip" data-v="Farketmez, ben varım">🤷 Farketmez</button>
+      </div>
+
+      <span class="label">Ne zaman?</span>
+      <div class="chips" id="timeChips">
+        <button class="chip" data-v="Hemen şimdi">⚡ Hemen şimdi</button>
+        <button class="chip" data-v="20 dk sonra">⏳ 20 dk sonra</button>
+        <button class="chip" data-v="Yemekten sonra">🍝 Yemekten sonra</button>
+        <button class="chip" data-v="Akşam 22:00">🌙 22:00</button>
+      </div>
+
+      <span class="label">Mikrofon durumun?</span>
+      <div class="chips" id="micChips">
+        <button class="chip" data-v="Açık, callout veririm">🎙️ Açık, callout veririm</button>
+        <button class="chip" data-v="Sadece küfür ederim">🤬 Sadece küfür ederim</button>
+        <button class="chip" data-v="Dinlerim, konuşmam">🙊 Dinlerim, konuşmam</button>
+        <button class="chip" data-v="Annem uyuyor, fısıldarım">🤫 Annem uyuyor</button>
+      </div>
+
+      <button class="btn" id="yesBtn" disabled>Mesajı oluştur ✅</button>
+    </section>
+
+    <!-- 3b: alarm + generator -->
+    <section class="screen" id="s-no">
+      <div class="alarm" id="alarm">
+        <div class="alarm-emoji">🚨</div>
+        <div class="alarm-title">BAHANE ALARMI</div>
+        <div class="alarm-sub">Bugün de mi yoksun? 😂</div>
+      </div>
+
+      <h2>Madem gelmiyorsun... 🤖</h2>
+      <p class="sub">Bari düzgün bir bahane bul. Bir tür seç, makineyi çevir, beğendiğini seç.</p>
+
+      <div class="chips red" id="catChips">
+        <button class="chip on" data-v="hepsi">🎲 Karışık</button>
+        <button class="chip" data-v="teknik">💻 Teknik</button>
+        <button class="chip" data-v="aile">👨‍👩‍👦 Aile</button>
+        <button class="chip" data-v="dram">🎭 Dramatik</button>
+        <button class="chip" data-v="sacma">🤡 Saçma</button>
+      </div>
+
+      <div class="machine">
+        <span class="machine-tag">BAHANE MAKİNESİ</span>
+        <div class="excuse" id="excuse">Çevirmek için aşağıdaki butona bas 👇</div>
+        <div class="meter hidden" id="meter">
+          <div class="meter-top"><span>İnandırıcılık</span><span id="pct">0%</span></div>
+          <div class="bar"><div class="bar-fill" id="barFill"></div></div>
+          <div class="verdict" id="verdict"></div>
+        </div>
+      </div>
+
+      <button class="btn purple" id="spinBtn">🎰 Bahane üret</button>
+      <button class="btn red hidden" id="pickBtn">Bunu seçiyorum 😈</button>
+
+      <button class="btn ghost" id="customToggle">✍️ Kendi bahanemi yazacağım</button>
+      <div class="hidden" id="customBox">
+        <span class="label">Bahanen ne?</span>
+        <textarea id="customInput" maxlength="200" placeholder="Örn: Balkonda güvercinle göz göze geldik, bozmak istemedim..."></textarea>
+        <button class="btn red" id="customBtn">Bu bahaneyle git 🫡</button>
+      </div>
+
+      <button class="btn ghost" id="regretBtn">😅 Tamam tamam, geliyorum</button>
+      <div class="counter" id="counter"></div>
+    </section>
+
+    <!-- 4: result -->
+    <section class="screen" id="s-result">
+      <h1 id="resultTitle">Mesajın hazır 📨</h1>
+      <p class="sub" id="resultSub">Kopyala, gruba yapıştır. Ya da direkt WhatsApp'tan gönder.</p>
+      <div class="msg-wrap">
+        <div class="msg" id="msg"></div>
+        <div class="msg-time" id="msgTime"></div>
+      </div>
+      <a class="btn wa" id="waBtn" target="_blank" rel="noopener">💬 WhatsApp'ta gönder</a>
+      <button class="btn ghost" id="copyBtn">📋 Kopyala</button>
+      <button class="btn ghost" id="restartBtn">🔁 Baştan başla</button>
+    </section>
+
+  </div>
+
+  <div class="footer">Bahane üretmek serbest, inandırmak senin sorunun 💀</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const rand = (a) => a[Math.floor(Math.random() * a.length)];
+  const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+  };
+
+  const state = { name: "", musait: null, istek: null, games: [], time: null, mic: null, cat: "hepsi", current: null, noClicks: 0 };
+
+  // ---------- excuses ----------
+  const EXCUSES = {
+    teknik: [
+      "Windows güncellemesi %3'te takıldı, tahmini kalan süre: 4 gün.",
+      "CS2 güncellemesi 47 GB, internetim 2 Mbps. Haftaya görüşürüz.",
+      "Mouse'un pili bitti. Markete pil almaya gidiyorum, dönmeyebilirim.",
+      "Steam şifremi unuttum, mail şifremi de unuttum, kim olduğumu da unuttum.",
+      "Klavyeye çay döküldü, W tuşu basılı kaldı. Sadece ileri gidebiliyorum.",
+      "Kulaklığın bir tarafı gitti, ayak seslerini sadece soldan duyuyorum.",
+      "Bilgisayardan garip bir ses geliyor, fan bana bir şey anlatmaya çalışıyor.",
+      "Ping 999. İnternet sağlayıcım beni kişisel olarak hedef aldı.",
+      "Monitörde ölü piksel buldum, tam nişangahın olduğu yerde.",
+      "Komşunun WiFi şifresi değişmiş, yani teknik olarak benim de internetim yok.",
+      "Ekran kartı 95 derece. Üstünde yumurta pişiriyorum, kapatamam.",
+    ],
+    aile: [
+      "Teyzemler geldi, misafir varken bilgisayar başına oturmak 'ayıp' kategorisinde.",
+      "Babam modemi yanına alıp uyudu.",
+      "Annem 'yine mi o oyun' dedi. Ses tonunda tehdit vardı.",
+      "Annem bulaşığı yıkamadan bilgisayara dokunursam parmaklarımı sayacakmış.",
+      "Kuzenimin sünnet düğünü var. Geçen sene yapıldı ama yıldönümü.",
+      "Sevgilimle film izliyoruz. Film 3 saat. Sonra bir film daha var.",
+      "Babam 'elektrik faturasını sen mi ödüyorsun' diye sordu. Cevabım yoktu.",
+      "Kardeşim bilgisayarı kaptı, Minecraft'ta ev yapıyor. Bitince bırakacakmış (asla bitmeyecek).",
+      "Annemle pazara gidiyorum. Pazar akşamı. Evet, pazar akşamı pazarı.",
+    ],
+    dram: [
+      "Geçen maçtaki 1v5 clutch'tan sonra kariyerimi zirvede bıraktım.",
+      "Terapistim R6 oynamamamı söyledi. Terapistim yok aslında, olsa söylerdi.",
+      "Rank düşerse ruhum da düşecek. Kendimi koruma altına alıyorum.",
+      "Geçen sefer beni flashladınız, hâlâ tam göremiyorum.",
+      "Kendimi bulmak için bir yolculuğa çıktım. Mutfağa. Uzun sürecek.",
+      "Son maçta takım beni kickledi. Affettim ama unutmadım.",
+      "Bugün duygusal olarak bas-konuş modundayım, kimse beni duyamaz.",
+      "Ben artık o eski ben değilim. Yeni ben de pek gelmek istemiyor.",
+    ],
+    sacma: [
+      "Kedim klavyenin üstünde uyuyor. Kaldırırsam bana küser, risk alamam.",
+      "Kaplumbağamın doğum günü. Pastayı kesmeden olmaz.",
+      "Merkür retrosunda. Headshot atamam, yıldızlar izin vermiyor.",
+      "Bugünkü sağ elle mouse tutma kotamı doldurdum.",
+      "Oyunda birini vurunca vicdan azabı çekmeye başladım, pasifist oldum.",
+      "Kafamda bir şarkı çalıyor, bitmeden başka ses duyamıyorum.",
+      "Pizza söyledim, kuryeyi karşılamam lazım. 4 saat sürebilir.",
+      "Sandalyem kırıldı. Ayakta oynayınca K/D'm düşüyor, bilimsel olarak kanıtlı.",
+      "Balkonda bir güvercinle göz göze geldik. Bozmak istemedim.",
+      "Saksıdaki fesleğene su verme saati. O da bir canlı.",
+      "Yastığım soğuk tarafına döndü, bu fırsatı kaçıramam.",
+    ],
+  };
+  const BASE = { teknik: [40, 85], aile: [35, 80], dram: [5, 40], sacma: [0, 18] };
+  const OPENERS = ["Kanka valla", "Abi inan bana,", "Beyler bugün olmaz.", "Ya sorma,", "Çok isterdim ama", "Normalde gelirdim ama", "Size yalan söylemem biliyorsunuz.", "Durum ciddi beyler."];
+  const CLOSERS = ["Yarın kesin varım 🙏", "Bensiz kazanın 💔", "Telafi edeceğim, söz (değil).", "Beni bekleyin... ama beklemeyin.", "Gönlüm sizinle 🫡", "Bir dahakine 1v5 atarım, borcum olsun.", "Anlayışınız için teşekkürler 🤝"];
+  const VERDICTS = [
+    [15, "Kimse inanmadı. Grup senden şüpheleniyor 🤨"],
+    [35, "Admin seni gruptan atmayı düşünüyor 🫠"],
+    [55, "Yarı yarıya... ekip tartışıyor 🤔"],
+    [80, "Fena değil, yutabilirler 😏"],
+    [101, "Oscar'lık performans. Helal 🏆"],
+  ];
+  const verdictFor = (p) => VERDICTS.find(([lim]) => p < lim)[1];
+  const barColor = (p) => p < 20 ? "var(--red)" : p < 50 ? "var(--orange)" : p < 80 ? "var(--yellow)" : "var(--green)";
+
+  function makeExcuse() {
+    const cat = state.cat === "hepsi" ? rand(Object.keys(EXCUSES)) : state.cat;
+    const text = rand(EXCUSES[cat]);
+    if (state.current && text === state.current.text && EXCUSES[cat].length > 1) return makeExcuse();
+    const [lo, hi] = BASE[cat];
+    return { text, opener: rand(OPENERS), closer: rand(CLOSERS), pct: randInt(lo, hi) };
+  }
+
+  // ---------- helpers ----------
+  function show(id) {
+    document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
+    $(id).classList.add("active");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  let toastT;
+  function toast(msg, ms = 2200) {
+    const t = $("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toastT);
+    toastT = setTimeout(() => t.classList.remove("show"), ms);
+  }
+  function confetti(emojis) {
+    for (let i = 0; i < 40; i++) {
+      const c = document.createElement("div");
+      c.className = "confetti";
+      c.textContent = rand(emojis);
+      c.style.left = Math.random() * 100 + "vw";
+      c.style.animationDuration = 2 + Math.random() * 2.5 + "s";
+      c.style.animationDelay = Math.random() * 0.6 + "s";
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 5500);
+    }
+  }
+  function vibrate(p) { try { navigator.vibrate && navigator.vibrate(p); } catch {} }
+  function shareUrl() {
+    return /^https?:/.test(location.protocol) ? location.origin + location.pathname : "";
+  }
+  function shakeEl(el) { el.classList.remove("shake"); void el.offsetWidth; el.classList.add("shake"); }
+
+  // ---------- 1: name ----------
+  const saved = store.get("bahane_name");
+  if (saved) $("nameInput").value = saved;
+
+  function submitName() {
+    const n = $("nameInput").value.trim();
+    if (!n) { toast("İsimsiz kahraman olmaz, bir isim yaz 🙄"); shakeEl($("nameInput")); return; }
+    state.name = n;
+    store.set("bahane_name", n);
+    $("helloTitle").textContent = `Selam ${n} 👋`;
+    show("s-bool");
+  }
+  $("nameBtn").onclick = submitName;
+  $("nameInput").addEventListener("keydown", (e) => { if (e.key === "Enter") submitName(); });
+
+  // ---------- 2: questions ----------
+  const NO_REACTIONS = [
+    "Emin misin? Kalbimizi kırıyorsun 💔",
+    "Gerçekten mi? Bir daha düşün...",
+    "Peki. Not alındı. Unutulmayacak 📝",
+  ];
+  document.querySelectorAll(".seg").forEach((seg) => {
+    seg.querySelectorAll("button").forEach((b) => {
+      b.onclick = () => {
+        seg.querySelectorAll("button").forEach((x) => x.classList.remove("on"));
+        b.classList.add("on");
+        const v = b.dataset.v === "1";
+        state[seg.dataset.var] = v;
+        if (!v) { toast(NO_REACTIONS[Math.min(state.noClicks++, NO_REACTIONS.length - 1)]); vibrate(60); }
+        $("evalBtn").disabled = state.musait === null || state.istek === null;
+      };
+    });
+  });
+  $("evalBtn").onclick = () => {
+    if (state.musait && state.istek) goYes();
+    else goNo();
+  };
+
+  // ---------- 3a: yes ----------
+  function goYes(fromRegret) {
+    show("s-yes");
+    confetti(["🎮", "🔥", "💣", "🛡️", "🎉"]);
+    toast(fromRegret ? "Bahane iptal edildi. Vicdan kazandı 🫡" : "İşte bu! Efsane modu açıldı 🔥");
+  }
+  function setupChips(containerId, onChange) {
+    const box = $(containerId);
+    const multi = box.dataset.multi === "1";
+    box.querySelectorAll(".chip").forEach((c) => {
+      c.onclick = () => {
+        if (multi) {
+          const any = box.querySelector('[data-v="Farketmez, ben varım"]');
+          if (c === any) box.querySelectorAll(".chip").forEach((x) => x !== c && x.classList.remove("on"));
+          else any.classList.remove("on");
+          c.classList.toggle("on");
+        } else {
+          box.querySelectorAll(".chip").forEach((x) => x.classList.remove("on"));
+          c.classList.add("on");
+        }
+        const vals = [...box.querySelectorAll(".chip.on")].map((x) => x.dataset.v);
+        onChange(multi ? vals : vals[0] || null);
+      };
+    });
+  }
+  const checkYes = () => { $("yesBtn").disabled = !(state.games.length && state.time && state.mic); };
+  setupChips("gameChips", (v) => { state.games = v; checkYes(); });
+  setupChips("timeChips", (v) => { state.time = v; checkYes(); });
+  setupChips("micChips", (v) => { state.mic = v; checkYes(); });
+
+  $("yesBtn").onclick = () => {
+    const lines = [
+      `✅ ${state.name}: Ben varım! 🎮`,
+      "",
+      `🎯 Oyun: ${state.games.join(" + ")}`,
+      `⏰ Ne zaman: ${state.time}`,
+      `🎧 Mikrofon: ${state.mic}`,
+      "",
+      `Bahane yok, mazeret yok. Girin hadi 😎`,
+    ];
+    showResult(lines, "Efsane geri döndü 🔥", "Gruba yolla da beklemesinler.");
+    confetti(["🎮", "🔥", "✅", "🎉"]);
+  };
+
+  // ---------- 3b: no / generator ----------
+  function goNo() {
+    show("s-no");
+    vibrate([80, 40, 80]);
+    shakeEl($("alarm"));
+    updateCounter();
+  }
+  setupChips("catChips", (v) => {
+    state.cat = v || "hepsi";
+    if (!v) $("catChips").querySelector('[data-v="hepsi"]').classList.add("on");
+  });
+
+  function updateCounter() {
+    const n = +(store.get("bahane_count") || 0);
+    $("counter").textContent = n ? `Bu telefondan üretilen bahane sayısı: ${n} 😬` : "";
+  }
+
+  let spinning = false;
+  $("spinBtn").onclick = () => {
+    if (spinning) return;
+    spinning = true;
+    const ex = $("excuse");
+    $("spinBtn").disabled = true;
+    $("pickBtn").classList.add("hidden");
+    $("meter").classList.remove("hidden");
+    $("barFill").style.width = "0";
+    $("pct").textContent = "...";
+    $("verdict").textContent = "Bahane hesaplanıyor...";
+    ex.classList.add("spinning");
+    const all = Object.values(EXCUSES).flat();
+    let ticks = 0;
+    const total = 16;
+    const tick = () => {
+      ex.textContent = rand(all);
+      ticks++;
+      if (ticks < total) setTimeout(tick, 50 + ticks * 9);
+      else land();
+    };
+    tick();
+    vibrate(30);
+
+    function land() {
+      const e = makeExcuse();
+      state.current = e;
+      ex.classList.remove("spinning");
+      ex.textContent = e.text;
+      setTimeout(() => {
+        $("barFill").style.width = Math.max(e.pct, 2) + "%";
+        $("barFill").style.background = barColor(e.pct);
+        $("pct").textContent = e.pct + "%";
+        $("verdict").textContent = verdictFor(e.pct);
+      }, 120);
+      store.set("bahane_count", String(+(store.get("bahane_count") || 0) + 1));
+      updateCounter();
+      $("spinBtn").textContent = "🎲 Başka üret";
+      $("spinBtn").disabled = false;
+      $("pickBtn").classList.remove("hidden");
+      spinning = false;
+      vibrate(20);
+    }
+  };
+
+  function excuseResult(e) {
+    const mid = /[.!]$/.test(e.opener) ? e.text : e.text.charAt(0).toLocaleLowerCase("tr") + e.text.slice(1);
+    const body = e.custom ? e.text : `${e.opener} ${mid} ${e.closer}`;
+    const lines = [
+      `🚨 BAHANE ALARMI: ${state.name} bu akşam yok!`,
+      "",
+      `💬 "${body}"`,
+      "",
+      `📊 İnandırıcılık: %${e.pct}`,
+      `⚖️ Karar: ${verdictFor(e.pct)}`,
+    ];
+    showResult(lines, "Bahanen hazır 😈", "Kopyala, gruba at, sonra telefonu kapat ve saklan.");
+    confetti(["🤡", "😂", "💀", "🙄"]);
+  }
+  $("pickBtn").onclick = () => state.current && excuseResult(state.current);
+
+  $("customToggle").onclick = () => {
+    $("customBox").classList.toggle("hidden");
+    if (!$("customBox").classList.contains("hidden")) $("customInput").focus();
+  };
+  $("customBtn").onclick = () => {
+    const t = $("customInput").value.trim();
+    if (!t) { toast("Boş bahane olmaz, bir şey yaz 😅"); return; }
+    excuseResult({ text: t, pct: randInt(0, 60), custom: true });
+  };
+  $("regretBtn").onclick = () => goYes(true);
+
+  // ---------- 4: result ----------
+  let finalText = "";
+  function showResult(lines, title, sub) {
+    const url = shareUrl();
+    finalText = lines.join("\n") + `\n\n🤖 Bahane Üretici onaylıdır ✔️${url ? "\n" + url : ""}`;
+    $("msg").textContent = finalText;
+    $("msgTime").textContent = new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" }) + " ✓✓";
+    $("resultTitle").textContent = title;
+    $("resultSub").textContent = sub;
+    $("waBtn").href = "https://wa.me/?text=" + encodeURIComponent(finalText);
+    show("s-result");
+  }
+  $("copyBtn").onclick = async () => {
+    let ok = false;
+    try { await navigator.clipboard.writeText(finalText); ok = true; } catch {}
+    if (!ok) {
+      const ta = document.createElement("textarea");
+      ta.value = finalText; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      try { ok = document.execCommand("copy"); } catch {}
+      ta.remove();
+    }
+    toast(ok ? "Kopyalandı! Şimdi gruba yapıştır 📋" : "Kopyalanamadı, mesaja basılı tutup kopyala 🙏");
+    vibrate(20);
+  };
+  $("restartBtn").onclick = () => {
+    Object.assign(state, { musait: null, istek: null, games: [], time: null, mic: null, current: null, noClicks: 0 });
+    document.querySelectorAll(".seg button, #gameChips .chip, #timeChips .chip, #micChips .chip").forEach((b) => b.classList.remove("on"));
+    $("evalBtn").disabled = true;
+    $("yesBtn").disabled = true;
+    $("excuse").textContent = "Çevirmek için aşağıdaki butona bas 👇";
+    $("meter").classList.add("hidden");
+    $("pickBtn").classList.add("hidden");
+    $("spinBtn").textContent = "🎰 Bahane üret";
+    show("s-name");
+  };
+})();
+</script>
+</body>
+</html>
